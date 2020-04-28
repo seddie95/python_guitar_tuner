@@ -4,30 +4,55 @@ from matplotlib.animation import FuncAnimation
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+from matplotlib.patches import Arc
 from guitar import Guitar
 
 # Set up the graph information
 fig, ax = plt.subplots()
 
+# set the color of the graph
+fig.patch.set_facecolor('black')
+
 # set the bounds of the graph
-ax.set_ylim([0, 5])
+ax.set_ylim([2, 6])
 ax.set_xlim([-5, 5])
 ax.set_facecolor('black')
 
+# Hide the ticks and labels
+ax.set_yticklabels([])
+ax.set_xticklabels([])
+ax.xaxis.set_ticks_position('none')
+ax.yaxis.set_ticks_position('none')
+
 # set origin and length of line
 x, y = (0, 0)
-length = 5
+length = 4
 
 # Find the end point
 endy = length * math.sin(math.radians(90))
 endx = length * math.cos(math.radians(90))
-
 
 # correct line
 ax.plot([x, 0], [y, 5], color='grey', ls='--', lw=3)
 
 # updated line
 line, = ax.plot([x, 0], [y, 5], color='red', lw=4)
+
+# Set initial title
+plt.title(f"Chord: ", color='green', fontsize=20)
+
+# Add Arc
+arc = Arc((0, 0), 10.5, 10.5, theta1=30, theta2=150, color='b', lw=3)
+ax.add_artist(arc)
+
+# Add labels for arc
+plt.text(-5.5, 2.5, "-50Hz", color='g', fontsize=18, rotation=70)
+plt.text(4.5, 2.5, "+50Hz", color='g', fontsize=18, rotation=-70)
+
+# draw circle for 0Hz
+circle = plt.Circle((0, 5.5), 0.1,  color='r')
+ax.add_artist(circle)
+
 
 
 def update_line(i, instrument):
@@ -49,7 +74,8 @@ def update_line(i, instrument):
     if decibel > -50 and freq < 440:
 
         # update line position using frequency
-        pos = diff * 1.8 + 90
+        # Show  +- 50Hz  from 30° to 150° ,(90°-30°)/50
+        pos = diff * 1.2 + 90
 
         # find the updated end of the line coordinates
         x2 = 5 * math.cos(math.radians(pos))
@@ -58,7 +84,10 @@ def update_line(i, instrument):
         # Update the lines end coordinates
         line.set_xdata([0, x2])
         line.set_ydata([0, y2])
-        plt.title(f"Chord: {pitch},{diff}")
+
+        # Set the title text and design
+        plt.title(f"Chord: {pitch},{diff}", color='green', fontsize=20)
+
 
         # Change line colour depending on proximity to desired note
         if abs(diff) < 1:
